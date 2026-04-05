@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin · Mi Portfolio</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ════════════════════════════════════════
+       RESET
+    ════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ════════════════════════════════════════
+       TOKENS DE DISEÑO
+    ════════════════════════════════════════ */
+    :root {
+      --bg:          #0b0d14;
+      --surface:     #12151f;
+      --surface-2:   #181c28;
+      --surface-3:   #1e2335;
+      --border:      #252a3a;
+      --border-2:    #313754;
+      --border-glow: rgba(79, 131, 245, 0.3);
+
+      --text-primary:   #edf0f5;
+      --text-secondary: #8a91a6;
+      --text-muted:     #50596e;
+      --text-code:      #a5b4fc;
+
+      --accent:      #4f83f5;
+      --accent-dim:  rgba(79, 131, 245, 0.10);
+      --accent-glow: rgba(79, 131, 245, 0.22);
+
+      --green:       #4ade80;
+      --green-dim:   rgba(74, 222, 128, 0.10);
+      --red:         #f87171;
+      --red-dim:     rgba(248, 113, 113, 0.10);
+      --yellow:      #facc15;
+      --yellow-dim:  rgba(250, 204, 21, 0.10);
+
+      --radius-sm:  8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow:     0 4px 30px rgba(0,0,0,0.5);
+      --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* ════════════════════════════════════════
+       BASE
+    ════════════════════════════════════════ */
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ════════════════════════════════════════
+       PANTALLA DE BLOQUEO (si no es admin)
+    ════════════════════════════════════════ */
+    #lock-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.2rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    #lock-screen.visible { display: flex; }
+
+    .lock-icon {
+      font-size: 3rem;
+      animation: shake 0.5s ease 0.3s both;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      20%       { transform: rotate(-12deg); }
+      40%       { transform: rotate(10deg); }
+      60%       { transform: rotate(-8deg); }
+      80%       { transform: rotate(6deg); }
+    }
+
+    .lock-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    .lock-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      max-width: 380px;
+    }
+
+    .lock-btn {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.6rem 1.4rem;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: transform 0.18s, box-shadow 0.18s;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .lock-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--accent-glow);
+    }
+
+    /* ════════════════════════════════════════
+       LAYOUT PRINCIPAL
+    ════════════════════════════════════════ */
+    #app { display: none; }
+    #app.visible { display: block; }
+
+    /* ════════════════════════════════════════
+       HEADER / TOP BAR
+    ════════════════════════════════════════ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 13, 20, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .topbar-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--border-glow);
+      color: var(--accent);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.55rem;
+      border-radius: 100px;
+    }
+
+    .topbar-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .topbar-user .crown { font-size: 0.9rem; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-2);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ════════════════════════════════════════
+       CONTENIDO PRINCIPAL
+    ════════════════════════════════════════ */
+    .main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* ─── Cabecera de sección ─── */
+    .page-header {
+      margin-bottom: 2.2rem;
+    }
+
+    .page-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      font-family: var(--font-mono);
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Tarjetas de estadísticas ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.2rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-2);
+      background: var(--surface-2);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      font-family: var(--font-mono);
+    }
+
+    .stat-value.blue   { color: var(--accent); }
+    .stat-value.green  { color: var(--green); }
+    .stat-value.yellow { color: var(--yellow); }
+    .stat-value.red    { color: var(--red); }
+
+    .stat-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── Barra de herramientas ─── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.85rem;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--accent);
+    }
+
+    .search-box input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 0.84rem;
+      font-family: inherit;
+      width: 180px;
+    }
+
+    .search-box input::placeholder { color: var(--text-muted); }
+
+    .search-icon { color: var(--text-muted); font-size: 0.85rem; }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.42rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.42rem 0.9rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--red-dim);
+      color: var(--red);
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+
+    .action-btn:hover {
+      background: rgba(248, 113, 113, 0.18);
+    }
+
+    .refresh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.42rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-2);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .refresh-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── Tabla de usuarios ─── */
+    .table-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .table-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .table-header-bar h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .table-count {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.1rem 0.5rem;
+      border-radius: 100px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    thead th {
+      padding: 0.75rem 1.25rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      background: var(--surface-3);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    thead th:hover { color: var(--text-secondary); }
+
+    thead th.sorted { color: var(--accent); }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: var(--surface-2); }
+
+    tbody tr.admin-row { background: rgba(79, 131, 245, 0.04); }
+    tbody tr.admin-row:hover { background: rgba(79, 131, 245, 0.08); }
+
+    td {
+      padding: 0.85rem 1.25rem;
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    td.mono {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-code);
+    }
+
+    /* Columna #ID */
+    .row-id {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Nombre de usuario */
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .user-avatar.admin  { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--border-glow); }
+    .user-avatar.viewer { background: var(--surface-3);  color: var(--text-secondary); border: 1px solid var(--border); }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    .user-key {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    /* Badge de rol */
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.18rem 0.65rem;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .role-badge.admin  { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(79,131,245,0.2); }
+    .role-badge.viewer { background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(74,222,128,0.2); }
+
+    /* Contraseña ofuscada */
+    .pass-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pass-dots {
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .pass-toggle {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.82rem;
+      padding: 0.15rem 0.3rem;
+      border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .pass-toggle:hover {
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* Botón eliminar */
+    .delete-btn {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .delete-btn:hover {
+      background: var(--red-dim);
+      border-color: rgba(248, 113, 113, 0.25);
+      color: var(--red);
+    }
+    
+    .role-btn {
+      background: none;
+      border: 1px solid var(--border-2);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+    }
+    
+    .ban-btn {
+      background: none;
+      border: 1px solid var(--border-2);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+    }
+    
+    .ban-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+      background: var(--red-dim);
+    }
+    
+    .role-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* Estado vacío */
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.4;
+    }
+
+    .empty-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── Panel de contenido guardado ─── */
+    .content-panel {
+      margin-top: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .content-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .content-panel-header h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0;
+    }
+
+    .content-entry {
+      padding: 0.95rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .content-entry:hover { background: var(--surface-2); }
+
+    .content-key {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.28rem;
+    }
+
+    .content-value {
+      font-size: 0.84rem;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .content-empty {
+      padding: 2.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+    }
+
+    /* ─── Raw JSON viewer ─── */
+    .json-panel {
+      margin-top: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .json-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .json-panel-header h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .json-toggle {
+      background: none;
+      border: 1px solid var(--border-2);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-family: inherit;
+      padding: 0.28rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .json-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .json-body {
+      display: none;
+      padding: 1.2rem 1.4rem;
+      overflow-x: auto;
+    }
+
+    .json-body.open { display: block; }
+
+    .json-body pre {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-code);
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.7;
+    }
+
+    /* ─── Modal de confirmación ─── */
+    #confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #confirm-overlay.open { display: flex; }
+
+    .confirm-modal {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      width: min(380px, calc(100vw - 2rem));
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      text-align: center;
+      animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .confirm-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+    .confirm-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+    .confirm-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    .confirm-desc strong { color: var(--red); }
+
+    .confirm-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .confirm-cancel {
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-2);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .confirm-cancel:hover { border-color: var(--border-2); }
+
+    .confirm-delete {
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--red);
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .confirm-delete:hover { opacity: 0.85; }
+
+    /* ─── Toast ─── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      color: var(--text-primary);
+      padding: 0.65rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      z-index: 999;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ─── Animación de entrada ─── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.4s ease both;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 640px) {
+      .main { padding: 1.5rem 1rem 3rem; }
+      .topbar { padding: 0.75rem 1rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      table { font-size: 0.8rem; }
+      td, thead th { padding: 0.7rem 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════
+       PANTALLA DE BLOQUEO
+  ══════════════════════════════════ -->
+  <div id="lock-screen">
+    <div class="lock-icon">🔒</div>
+    <p class="lock-title">Acceso restringido</p>
+    <p class="lock-subtitle">Este panel solo es accesible para el administrador del portfolio. Inicia sesión con tu cuenta de admin.</p>
+    <a href="index.html" class="lock-btn">← Volver al portfolio</a>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PANEL PRINCIPAL
+  ══════════════════════════════════ -->
+  <div id="app">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <a href="index.html" class="topbar-logo">
+          <span class="topbar-badge">ADMIN</span>
+          <span class="topbar-title">Panel de control</span>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-user">
+          <span class="crown">👑</span>
+          <span id="admin-name">Emmanuel</span>
+        </span>
+        <a href="index.html" class="back-btn">← Portfolio</a>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Cabecera -->
+      <div class="page-header animate-in">
+        <p class="page-label">database · localStorage</p>
+        <h1 class="page-title">Gestión de cuentas</h1>
+        <p class="page-subtitle">Todas las cuentas registradas en el portfolio. Los datos se almacenan en <code style="font-family:var(--font-mono); color:var(--text-code); font-size:0.85em;">localStorage</code> del navegador.</p>
+      </div>
+
+      <!-- ─── Estadísticas ─── -->
+      <div class="stats-grid animate-in" id="stats-grid">
+        <!-- Rellenadas por JS -->
+      </div>
+
+      <!-- ─── Barra de herramientas ─── -->
+      <div class="toolbar animate-in">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Buscar usuario..." autocomplete="off">
+          </div>
+          <button class="filter-btn active" id="filter-all">Todos</button>
+          <button class="filter-btn" id="filter-viewers">Solo visitantes</button>
+        </div>
+        <div class="toolbar-right">
+          <button class="refresh-btn" id="refresh-btn">↻ Actualizar</button>
+          <button class="action-btn" id="delete-all-btn">🗑 Eliminar visitantes</button>
+        </div>
+      </div>
+
+      <!-- ─── Tabla de usuarios ─── -->
+      <div class="table-wrapper animate-in">
+        <div class="table-header-bar">
+          <h3>
+            👤 Cuentas registradas
+            <span class="table-count" id="user-count">0</span>
+          </h3>
+        </div>
+        <div id="users-table-container">
+          <!-- Tabla generada por JS -->
+        </div>
+      </div>
+
+      <!-- ─── Contenido del portfolio ─── -->
+      <div class="content-panel animate-in">
+        <div class="content-panel-header">
+          <h3>
+            📝 Contenido guardado del portfolio
+            <span class="table-count" id="content-count">0</span>
+          </h3>
+          <button class="refresh-btn" id="clear-content-btn">🗑 Limpiar todo</button>
+        </div>
+        <div id="content-grid">
+          <!-- Generado por JS -->
+        </div>
+      </div>
+
+      <!-- ─── Raw JSON ─── -->
+      <div class="json-panel animate-in">
+        <div class="json-panel-header">
+          <h3>🗄️ Raw JSON — localStorage</h3>
+          <button class="json-toggle" id="json-toggle">Mostrar</button>
+        </div>
+        <div class="json-body" id="json-body">
+          <pre id="json-pre"></pre>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ─── Modal de confirmación ─── -->
+  <div id="confirm-overlay">
+    <div class="confirm-modal">
+      <div class="confirm-icon">⚠️</div>
+      <p class="confirm-title" id="confirm-title">¿Confirmar acción?</p>
+      <p class="confirm-desc" id="confirm-desc">Esta acción no se puede deshacer.</p>
+      <div class="confirm-actions">
+        <button class="confirm-cancel" id="confirm-cancel">Cancelar</button>
+        <button class="confirm-delete" id="confirm-ok">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script>
+    /* ══════════════════════════════════════════
+       CONSTANTES (deben coincidir con index.html)
+    ══════════════════════════════════════════ */
+    const ADMIN_USER    = 'Emmanuel';
+    const SESSION_KEY   = 'portfolio_session';
+    const USERS_KEY     = 'portfolio_users';
+    const CONTENT_KEY   = 'portfolio_content';
+
+    /* ══════════════════════════════════════════
+       HELPERS DE localStorage
+    ══════════════════════════════════════════ */
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
+      catch { return null; }
+    }
+
+    function getUsers() {
+      try { return JSON.parse(localStorage.getItem(USERS_KEY)) || {}; }
+      catch { return {}; }
+    }
+
+    function saveUsers(u) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(u));
+    }
+
+    function getContent() {
+      try { return JSON.parse(localStorage.getItem(CONTENT_KEY)) || {}; }
+      catch { return {}; }
+    }
+
+    function clearContent() {
+      localStorage.removeItem(CONTENT_KEY);
+    }
+
+    /* ══════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════ */
+    const toastEl = document.getElementById('toast');
+    let toastTimer;
+
+    function showToast(msg, duration = 2600) {
+      clearTimeout(toastTimer);
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), duration);
+    }
+
+    /* ══════════════════════════════════════════
+       MODAL DE CONFIRMACIÓN
+    ══════════════════════════════════════════ */
+    const confirmOverlay = document.getElementById('confirm-overlay');
+    let confirmCallback  = null;
+
+    function openConfirm(title, desc, onOk) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-desc').innerHTML    = desc;
+      confirmCallback = onOk;
+      confirmOverlay.classList.add('open');
+    }
+
+    document.getElementById('confirm-cancel').addEventListener('click', () => {
+      confirmOverlay.classList.remove('open');
+      confirmCallback = null;
+    });
+
+    document.getElementById('confirm-ok').addEventListener('click', () => {
+      confirmOverlay.classList.remove('open');
+      if (confirmCallback) confirmCallback();
+      confirmCallback = null;
+    });
+
+    confirmOverlay.addEventListener('click', (e) => {
+      if (e.target === confirmOverlay) {
+        confirmOverlay.classList.remove('open');
+        confirmCallback = null;
+      }
+    });
+
+    /* ══════════════════════════════════════════
+       ESTADO DE LA UI
+    ══════════════════════════════════════════ */
+    let currentFilter = 'all';   /* 'all' | 'viewers' */
+    let searchTerm    = '';
+    let sortBy        = 'index'; /* columna activa */
+    let sortDir       = 1;       /* 1 = asc, -1 = desc */
+    let pendingDeleteKey = null;
+
+    /* ══════════════════════════════════════════
+       CONSTRUIR LISTA COMPLETA DE USUARIOS
+       Incluye al admin hardcodeado + los del localstorage
+    ══════════════════════════════════════════ */
+    function buildUserList() {
+      const stored = getUsers();
+      const list = [];
+
+      /* Admin siempre al inicio */
+      list.push({
+        key:         'emmanuel',
+        displayName: ADMIN_USER,
+        role:        'admin',
+        password:    '****',       /* nunca mostrar la real */
+        isAdmin:     true,
+      });
+
+      /* Cuentas registradas */
+      let idx = 1;
+      for (const [key, data] of Object.entries(stored)) {
+        list.push({
+          key:         key,
+          displayName: data.displayName || key,
+          role:        data.role === 'admin' ? 'admin' : 'viewer',
+          password:    data.password || '',
+          isAdmin:     data.role === 'admin',
+          banned:      data.banned || false,
+          index:       idx++,
+        });
+      }
+
+      return list;
+    }
+
+    /* ══════════════════════════════════════════
+       INICIALES DEL AVATAR
+    ══════════════════════════════════════════ */
+    function initials(name) {
+      return name.slice(0, 2).toUpperCase();
+    }
+
+    /* ══════════════════════════════════════════
+       RENDERIZAR ESTADÍSTICAS
+    ══════════════════════════════════════════ */
+    function renderStats(users) {
+      const total    = users.length;
+      const viewers  = users.filter(u => !u.isAdmin).length;
+      const content  = Object.keys(getContent()).length;
+
+      document.getElementById('stats-grid').innerHTML = `
+        <div class="stat-card">
+          <span class="stat-label">Total cuentas</span>
+          <span class="stat-value blue">${total}</span>
+          <span class="stat-note">incluyendo admin</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Visitantes</span>
+          <span class="stat-value green">${viewers}</span>
+          <span class="stat-note">cuentas de solo lectura</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Admin</span>
+          <span class="stat-value yellow">1</span>
+          <span class="stat-note">Emmanuel</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Campos editados</span>
+          <span class="stat-value" style="color:var(--text-code)">${content}</span>
+          <span class="stat-note">en el portfolio</span>
+        </div>
+      `;
+    }
+
+    /* ══════════════════════════════════════════
+       VISIBILIDAD DE CONTRASEÑA
+    ══════════════════════════════════════════ */
+    function togglePass(btn, plainText) {
+      const dotsEl = btn.previousElementSibling;
+      if (btn.dataset.visible === '1') {
+        dotsEl.textContent   = '••••••••';
+        btn.textContent      = '👁';
+        btn.dataset.visible  = '0';
+      } else {
+        dotsEl.textContent   = plainText;
+        btn.textContent      = '🙈';
+        btn.dataset.visible  = '1';
+      }
+    }
+
+    /* ══════════════════════════════════════════
+       RENDERIZAR TABLA
+    ══════════════════════════════════════════ */
+    function renderTable() {
+      let users = buildUserList();
+
+      /* Filtrar */
+      if (currentFilter === 'viewers') users = users.filter(u => !u.isAdmin);
+      if (searchTerm) {
+        const q = searchTerm.toLowerCase();
+        users = users.filter(u =>
+          u.displayName.toLowerCase().includes(q) ||
+          u.key.toLowerCase().includes(q)
+        );
+      }
+
+      /* Ordenar */
+      users.sort((a, b) => {
+        let va = a[sortBy] ?? '';
+        let vb = b[sortBy] ?? '';
+        if (typeof va === 'string') va = va.toLowerCase();
+        if (typeof vb === 'string') vb = vb.toLowerCase();
+        if (va < vb) return -1 * sortDir;
+        if (va > vb) return  1 * sortDir;
+        return 0;
+      });
+
+      document.getElementById('user-count').textContent = users.length;
+
+      const container = document.getElementById('users-table-container');
+
+      if (users.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p class="empty-text">No se encontraron usuarios con ese filtro.</p>
+          </div>`;
+        return;
+      }
+
+      const cols = [
+        { key: 'index',       label: '#'         },
+        { key: 'displayName', label: 'Usuario'    },
+        { key: 'role',        label: 'Rol'        },
+        { key: 'key',         label: 'Clave DB'   },
+        { key: 'password',    label: 'Contraseña' },
+        { key: 'actions',     label: 'Acciones'   },
+      ];
+
+      const headerCells = cols.map(c => {
+        if (c.key === 'actions' || c.key === 'password') {
+          return `<th>${c.label}</th>`;
+        }
+        const active = sortBy === c.key ? ' sorted' : '';
+        const arrow  = sortBy === c.key ? (sortDir === 1 ? ' ↑' : ' ↓') : '';
+        return `<th class="${active}" data-sort="${c.key}">${c.label}${arrow}</th>`;
+      }).join('');
+
+      const rows = users.map((u, i) => {
+        const avatarClass = u.isAdmin ? 'admin' : 'viewer';
+        const roleLabel   = u.isAdmin
+          ? `<span class="role-badge admin">👑 Admin</span>`
+          : (u.banned ? `<span class="role-badge" style="color:var(--red);border-color:var(--red);">🚫 Baneado</span>` : `<span class="role-badge viewer">👁 Visitante</span>`);
+        const rowClass = u.isAdmin ? ' admin-row' : (u.banned ? ' banned-row' : '');
+
+        const passDisplay = u.isAdmin
+          ? `<span class="pass-dots" style="color:var(--text-muted)">protegida</span>`
+          : `<span class="pass-cell">
+               <span class="pass-dots">••••••••</span>
+               <button class="pass-toggle" data-pass="${u.password}" data-visible="0" onclick="togglePass(this,'${u.password.replace(/'/g,"\\'")}')">👁</button>
+             </span>`;
+
+        const deleteBtn = u.key === 'emmanuel'
+          ? `<span style="color:var(--text-muted);font-size:0.78rem;">Principal</span>`
+          : `<button class="role-btn" data-key="${u.key}" data-isadmin="${u.isAdmin}">${u.isAdmin ? '⬇️ Quitar Admin' : '⬆️ Hacer Admin'}</button>
+             <button class="ban-btn" data-key="${u.key}" data-isbanned="${u.banned}">${u.banned ? '✅ Desbanear' : '🚫 Banear'}</button>
+             <button class="delete-btn" data-key="${u.key}">🗑 Eliminar</button>`;
+
+        const id = u.isAdmin ? '—' : (i + (currentFilter === 'viewers' ? 0 : 0));
+
+        return `
+          <tr class="${rowClass}">
+            <td class="row-id">${u.isAdmin ? 'ADM' : String(i).padStart(3,'0')}</td>
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar ${avatarClass}">${initials(u.displayName)}</div>
+                <div>
+                  <div class="user-name">${u.displayName}</div>
+                  <div class="user-key">${u.key}</div>
+                </div>
+              </div>
+            </td>
+            <td>${roleLabel}</td>
+            <td class="mono">${u.key}</td>
+            <td>${passDisplay}</td>
+            <td>${deleteBtn}</td>
+          </tr>`;
+      }).join('');
+
+      container.innerHTML = `
+        <table>
+          <thead><tr>${headerCells}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+
+      /* Eventos de ordenar */
+      container.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.sort;
+          if (sortBy === col) { sortDir *= -1; }
+          else { sortBy = col; sortDir = 1; }
+          renderTable();
+        });
+      });
+
+      /* Eventos de eliminar */
+      container.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.key;
+          const users2 = getUsers();
+          const name = users2[key]?.displayName || key;
+          openConfirm(
+            '¿Eliminar esta cuenta?',
+            `Vas a eliminar la cuenta de <strong>${name}</strong>. Esta acción es permanente.`,
+            () => {
+              delete users2[key];
+              saveUsers(users2);
+              renderAll();
+              showToast(`🗑 Cuenta "${name}" eliminada`);
+            }
+          );
+        });
+      });
+      
+      /* Eventos de cambiar rol */
+      container.querySelectorAll('.role-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.key;
+          const isAdmin = btn.dataset.isadmin === 'true';
+          const users2 = getUsers();
+          if (users2[key]) {
+            users2[key].role = isAdmin ? 'viewer' : 'admin';
+            saveUsers(users2);
+            renderAll();
+            showToast(isAdmin ? `⬇️ Permisos revocados` : `⬆️ Ahora es Admin`);
+          }
+        });
+      });
+      
+      /* Eventos de banear */
+      container.querySelectorAll('.ban-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.key;
+          const isBanned = btn.dataset.isbanned === 'true';
+          const users2 = getUsers();
+          if (users2[key]) {
+            users2[key].banned = !isBanned;
+            saveUsers(users2);
+            renderAll();
+            showToast(!isBanned ? `🚫 Usuario baneado` : `✅ Usuario desbaneado`);
+          }
+        });
+      });
+    }
+
+    /* ══════════════════════════════════════════
+       RENDERIZAR CONTENIDO GUARDADO
+    ══════════════════════════════════════════ */
+    function renderContent() {
+      const content = getContent();
+      const entries = Object.entries(content);
+      const countEl = document.getElementById('content-count');
+      const gridEl  = document.getElementById('content-grid');
+
+      countEl.textContent = entries.length;
+
+      if (entries.length === 0) {
+        gridEl.innerHTML = `<p class="content-empty">No hay contenido guardado todavía. Inicia sesión como Emmanuel y edita los campos del portfolio.</p>`;
+        return;
+      }
+
+      gridEl.className = 'content-grid';
+      gridEl.innerHTML = entries.map(([k, v]) => `
+        <div class="content-entry">
+          <div class="content-key">${k}</div>
+          <div class="content-value">${v || '<em style="color:var(--text-muted)">vacío</em>'}</div>
+        </div>
+      `).join('');
+    }
+
+    /* ══════════════════════════════════════════
+       RENDERIZAR JSON RAW
+    ══════════════════════════════════════════ */
+    function renderJson() {
+      const raw = {
+        portfolio_session: JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'),
+        portfolio_users:   getUsers(),
+        portfolio_content: getContent(),
+      };
+      document.getElementById('json-pre').textContent = JSON.stringify(raw, null, 2);
+    }
+
+    /* ══════════════════════════════════════════
+       RENDERIZAR TODO
+    ══════════════════════════════════════════ */
+    function renderAll() {
+      const users = buildUserList();
+      renderStats(users);
+      renderTable();
+      renderContent();
+      renderJson();
+    }
+
+    /* ══════════════════════════════════════════
+       VERIFICAR SESIÓN Y MOSTRAR UI
+    ══════════════════════════════════════════ */
+    const lockScreen = document.getElementById('lock-screen');
+    const appEl      = document.getElementById('app');
+
+    const session = getSession();
+
+    if (!session || session.role !== 'admin') {
+      lockScreen.classList.add('visible');
+    } else {
+      appEl.classList.add('visible');
+      document.getElementById('admin-name').textContent = session.username || ADMIN_USER;
+      renderAll();
+    }
+
+    /* ══════════════════════════════════════════
+       EVENTOS DE LA UI
+    ══════════════════════════════════════════ */
+
+    /* Búsqueda */
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchTerm = e.target.value.trim();
+      renderTable();
+    });
+
+    /* Filtros */
+    document.getElementById('filter-all').addEventListener('click', () => {
+      currentFilter = 'all';
+      document.getElementById('filter-all').classList.add('active');
+      document.getElementById('filter-viewers').classList.remove('active');
+      renderTable();
+    });
+
+    document.getElementById('filter-viewers').addEventListener('click', () => {
+      currentFilter = 'viewers';
+      document.getElementById('filter-viewers').classList.add('active');
+      document.getElementById('filter-all').classList.remove('active');
+      renderTable();
+    });
+
+    /* Actualizar */
+    document.getElementById('refresh-btn').addEventListener('click', () => {
+      renderAll();
+      showToast('↻ Datos actualizados');
+    });
+
+    /* Eliminar todos los visitantes */
+    document.getElementById('delete-all-btn').addEventListener('click', () => {
+      const viewers = Object.keys(getUsers());
+      if (viewers.length === 0) {
+        showToast('ℹ️ No hay visitantes que eliminar');
+        return;
+      }
+      openConfirm(
+        '¿Eliminar todos los visitantes?',
+        `Vas a eliminar <strong>${viewers.length} cuenta(s)</strong> de visitante. El admin se conserva.`,
+        () => {
+          saveUsers({});
+          renderAll();
+          showToast(`🗑 ${viewers.length} cuenta(s) eliminada(s)`);
+        }
+      );
+    });
+
+    /* Limpiar contenido */
+    document.getElementById('clear-content-btn').addEventListener('click', () => {
+      const n = Object.keys(getContent()).length;
+      if (n === 0) {
+        showToast('ℹ️ No hay contenido guardado');
+        return;
+      }
+      openConfirm(
+        '¿Limpiar todo el contenido?',
+        `Esto borrará los <strong>${n} campos editados</strong> del portfolio y restaurará los textos originales.`,
+        () => {
+          clearContent();
+          renderAll();
+          showToast('🗑 Contenido del portfolio limpiado');
+        }
+      );
+    });
+
+    /* Toggle JSON */
+    const jsonToggle = document.getElementById('json-toggle');
+    const jsonBody   = document.getElementById('json-body');
+
+    jsonToggle.addEventListener('click', () => {
+      const isOpen = jsonBody.classList.toggle('open');
+      jsonToggle.textContent = isOpen ? 'Ocultar' : 'Mostrar';
+    });
+
+    /* Teclado: Escape cierra confirmación */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        confirmOverlay.classList.remove('open');
+        confirmCallback = null;
+      }
+    });
+  </script>
+
+</body>
+</html>

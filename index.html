@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Portfolio</title>
+  <meta name="description" content="Portfolio personal — proyectos, habilidades y contacto.">
+
+  <!-- Fuente moderna desde Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ════════════════════════════════════════
+       RESET
+    ════════════════════════════════════════ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ════════════════════════════════════════
+       VARIABLES GLOBALES — TEMA OSCURO (default)
+    ════════════════════════════════════════ */
+    :root,
+    [data-theme="dark"] {
+      --bg:          #0f1117;
+      --surface:     #181b24;
+      --surface-2:   #1e222e;
+      --border:      #2c3040;
+      --border-2:    #3a3f52;
+
+      --text-primary:   #edf0f5;
+      --text-secondary: #8a91a6;
+      --text-muted:     #555e75;
+
+      --accent:      #4f83f5;
+      --accent-dim:  rgba(79, 131, 245, 0.12);
+      --accent-glow: rgba(79, 131, 245, 0.20);
+
+      --nav-bg: rgba(15, 17, 23, 0.82);
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --shadow:    0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    /* ════════════════════════════════════════
+       TEMA CLARO
+    ════════════════════════════════════════ */
+    [data-theme="light"] {
+      --bg:          #f4f6f9;
+      --surface:     #ffffff;
+      --surface-2:   #edf0f5;
+      --border:      #dde1ea;
+      --border-2:    #bfc6d4;
+
+      --text-primary:   #111827;
+      --text-secondary: #4b5563;
+      --text-muted:     #9ca3af;
+
+      --accent:      #2563eb;
+      --accent-dim:  rgba(37, 99, 235, 0.10);
+      --accent-glow: rgba(37, 99, 235, 0.18);
+
+      --nav-bg: rgba(244, 246, 249, 0.88);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ════════════════════════════════════════
+       BODY
+    ════════════════════════════════════════ */
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    /* ════════════════════════════════════════
+       TRANSICIÓN GLOBAL
+    ════════════════════════════════════════ */
+    body, nav, .card, .skill-tag, .contact-icon, .hero-badge {
+      transition: background 0.3s ease, color 0.3s ease,
+                  border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* ════════════════════════════════════════
+       NAVEGACIÓN
+    ════════════════════════════════════════ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.75rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ════════════════════════════════════════
+       BOTÓN TEMA
+    ════════════════════════════════════════ */
+    #theme-toggle {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.18s;
+    }
+
+    #theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: rotate(15deg) scale(1.08);
+    }
+
+    #theme-toggle svg {
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+
+    /* ════════════════════════════════════════
+       BOTÓN LOGIN / USER CHIP en el nav
+    ════════════════════════════════════════ */
+    #login-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.38rem 0.9rem;
+      border-radius: 100px;
+      border: 1.5px solid var(--border-2);
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    #login-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    #login-btn.logged-in {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    #login-btn .user-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      flex-shrink: 0;
+    }
+
+    /* ════════════════════════════════════════
+       MODAL DE LOGIN
+    ════════════════════════════════════════ */
+    #login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    #login-overlay.open {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .login-modal {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: 2.4rem 2.2rem;
+      width: min(420px, calc(100vw - 2rem));
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: slideUp 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      position: relative;
+    }
+
+    .login-modal-header {
+      margin-bottom: 1.8rem;
+      text-align: center;
+    }
+
+    .login-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-glow);
+      display: inline-grid;
+      place-items: center;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .login-modal h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      margin-bottom: 0.3rem;
+    }
+
+    .login-modal .login-subtitle {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    .login-field {
+      margin-bottom: 1rem;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.45rem;
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 0.92rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .login-field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    .login-field input::placeholder {
+      color: var(--text-muted);
+    }
+
+    #login-error {
+      display: none;
+      font-size: 0.82rem;
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.85rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    #login-submit,
+    #register-submit {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+      box-shadow: 0 4px 16px rgba(79, 131, 245, 0.3);
+    }
+
+    #login-submit:hover,
+    #register-submit:hover {
+      background: #6395f7;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(79, 131, 245, 0.4);
+    }
+
+    #login-submit:active,
+    #register-submit:active {
+      transform: translateY(0);
+    }
+
+    .login-modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-2);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .login-modal-close:hover {
+      background: var(--border);
+      color: var(--text-primary);
+    }
+
+    /* ════════════════════════════════════════
+       TABS DEL MODAL (Login / Registrarse)
+    ════════════════════════════════════════ */
+    .modal-tabs {
+      display: flex;
+      gap: 0;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 1.6rem;
+    }
+
+    .modal-tab {
+      flex: 1;
+      padding: 0.5rem 0;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .modal-tab.active {
+      background: var(--surface);
+      color: var(--text-primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    }
+
+    .modal-tab:hover:not(.active) {
+      color: var(--text-secondary);
+    }
+
+    /* Panel de cada tab */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Mensaje de éxito en registro */
+    #register-success {
+      display: none;
+      font-size: 0.82rem;
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.85rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    /* Error de registro */
+    #register-error {
+      display: none;
+      font-size: 0.82rem;
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.85rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    /* Indicador de fortaleza de contraseña */
+    .password-strength {
+      height: 3px;
+      border-radius: 3px;
+      margin-top: 0.4rem;
+      background: var(--border);
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .password-strength-bar {
+      height: 100%;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    /* ════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════ */
+    .hero {
+      padding: 5.5rem 0 3.5rem;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.35rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 1.75rem;
+      animation: fadeDown 0.5s ease both;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse 2s infinite;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+      margin-bottom: 1.1rem;
+      animation: fadeDown 0.5s 0.1s ease both;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #a0b4d8 0%, var(--accent) 60%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 460px;
+      margin: 0 auto 2rem;
+      animation: fadeDown 0.5s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeDown 0.5s 0.3s ease both;
+    }
+
+    /* ════════════════════════════════════════
+       BOTONES
+    ════════════════════════════════════════ */
+    .btn {
+      display: inline-block;
+      padding: 0.65rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(79, 131, 245, 0.28);
+    }
+
+    .btn-primary:hover {
+      background: #6395f7;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(79, 131, 245, 0.38);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1.5px solid var(--border-2);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* ════════════════════════════════════════
+       DIVISOR
+    ════════════════════════════════════════ */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    /* ════════════════════════════════════════
+       SECCIONES
+    ════════════════════════════════════════ */
+    .section {
+      padding: 3.5rem 0;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ════════════════════════════════════════
+       TARJETAS
+    ════════════════════════════════════════ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      position: relative;
+    }
+    
+    .delete-proj-btn {
+      display: none;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--red-dim);
+      border: 1px solid rgba(248, 113, 113, 0.2);
+      color: var(--red);
+      border-radius: var(--radius-sm);
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s;
+    }
+    
+    .delete-proj-btn:hover {
+      background: rgba(248, 113, 113, 0.2);
+    }
+    
+    body.edit-mode .delete-proj-btn {
+      display: inline-block;
+    }
+    
+    #add-project-btn {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--accent);
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    #add-project-btn:hover {
+      background: rgba(79, 131, 245, 0.15);
+    }
+    
+    body.edit-mode #add-project-btn {
+      display: block;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-2);
+      background: var(--surface-2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.45rem;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 0.91rem;
+    }
+
+    /* ════════════════════════════════════════
+       SKILLS
+    ════════════════════════════════════════ */
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.5rem;
+    }
+
+    .skill-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 100px;
+      padding: 0.28rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: border-color 0.18s, color 0.18s, transform 0.15s;
+    }
+
+    .skill-tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* ════════════════════════════════════════
+       CARD LINK
+    ════════════════════════════════════════ */
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent);
+      font-size: 0.84rem;
+      font-weight: 500;
+      text-decoration: none;
+      margin-top: 0.8rem;
+      transition: opacity 0.2s;
+    }
+
+    .card-link:hover { opacity: 0.75; }
+    .card-link svg { width: 13px; height: 13px; }
+
+    /* ════════════════════════════════════════
+       CONTACTO
+    ════════════════════════════════════════ */
+    .contact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .contact-list li a {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.93rem;
+      transition: color 0.2s;
+    }
+
+    .contact-list li a:hover { color: var(--text-primary); }
+
+    .contact-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 0.88rem;
+    }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+    }
+
+    /* ════════════════════════════════════════
+       ANIMACIONES
+    ════════════════════════════════════════ */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.35; }
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .nav-links { gap: 1rem; }
+      .hero { padding: 3.5rem 0 2rem; }
+      .nav-links { display: none; }
+    }
+
+    /* ════════════════════════════════════════
+       MODO EDICIÓN (solo para Emmanuel)
+       Solo visible cuando body tiene clase .edit-mode
+    ════════════════════════════════════════ */
+
+    /* Banner de edición — oculto por defecto */
+    #edit-banner {
+      display: none;
+      position: relative;
+      z-index: 200;
+      background: linear-gradient(90deg, #78350f, #92400e);
+      color: #fef3c7;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.55rem 1.25rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    /* Solo se muestra en modo edición */
+    body.edit-mode #edit-banner {
+      display: flex;
+    }
+
+    .edit-banner-text {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #pending-count {
+      display: inline-block;
+      background: #fef3c7;
+      color: #78350f;
+      border-radius: 100px;
+      padding: 0 0.5rem;
+      font-weight: 700;
+      min-width: 1.4rem;
+      text-align: center;
+    }
+
+    #edit-close {
+      background: none;
+      border: none;
+      color: #fef3c7;
+      cursor: pointer;
+      font-size: 1rem;
+      opacity: 0.7;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      line-height: 1;
+      transition: opacity 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+
+    #edit-close:hover {
+      opacity: 1;
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* data-field — solo activo en edit-mode */
+    body.edit-mode [data-field] {
+      position: relative;
+      outline: 2px dashed rgba(245, 158, 11, 0.75);
+      outline-offset: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      animation: fieldPulse 2.5s ease-in-out infinite;
+    }
+
+    body.edit-mode a[data-field],
+    body.edit-mode span[data-field] {
+      display: inline-block;
+    }
+
+    body.edit-mode [data-field]::after {
+      content: '✏️  ' attr(data-field);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      background: #92400e;
+      color: #fef3c7;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding: 0.22rem 0.55rem;
+      border-radius: 5px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 600;
+    }
+
+    body.edit-mode [data-field]:hover::after { opacity: 1; }
+
+    /* Elemento actualmente en edición */
+    body.edit-mode [data-field][contenteditable="true"]:focus {
+      outline: 2px solid rgba(245, 158, 11, 1);
+      outline-offset: 6px;
+      border-radius: 4px;
+      background: rgba(245, 158, 11, 0.06);
+      animation: none;
+      cursor: text;
+    }
+
+    /* Oculta el tooltip mientras se edita */
+    body.edit-mode [data-field][contenteditable="true"]:focus::after {
+      display: none;
+    }
+
+    @keyframes fieldPulse {
+      0%, 100% { outline-color: rgba(245, 158, 11, 0.75); }
+      50%       { outline-color: rgba(245, 158, 11, 0.25); }
+    }
+
+    /* ════════════════════════════════════════
+       TOAST DE NOTIFICACIÓN
+    ════════════════════════════════════════ */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      color: var(--text-primary);
+      padding: 0.65rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+      z-index: 999;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       MODAL DE LOGIN
+  ═══════════════════════════════════════ -->
+  <div id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <div class="login-modal">
+      <!-- Botón cerrar -->
+      <button class="login-modal-close" id="login-close" aria-label="Cerrar">✕</button>
+
+      <div class="login-modal-header">
+        <div class="login-icon">🔐</div>
+        <h2 id="login-title">Acceso al portfolio</h2>
+        <p class="login-subtitle">Inicia sesión o crea una cuenta nueva</p>
+      </div>
+
+      <!-- Pestañas -->
+      <div class="modal-tabs" role="tablist">
+        <button class="modal-tab active" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login">Iniciar sesión</button>
+        <button class="modal-tab" id="tab-register" role="tab" aria-selected="false" aria-controls="panel-register">Crear cuenta</button>
+      </div>
+
+      <!-- Panel: Login -->
+      <div class="tab-panel active" id="panel-login" role="tabpanel">
+        <form id="login-form" autocomplete="off">
+          <div class="login-field">
+            <label for="login-username">Usuario</label>
+            <input
+              type="text"
+              id="login-username"
+              name="username"
+              placeholder="Tu nombre de usuario"
+              autocomplete="username"
+              required
+            >
+          </div>
+
+          <div class="login-field">
+            <label for="login-password">Contraseña</label>
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <div id="login-error">❌ Usuario o contraseña incorrectos.</div>
+
+          <button type="submit" id="login-submit">Entrar</button>
+        </form>
+
+        <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--text-muted)">
+          ¿No tienes cuenta?
+          <button id="goto-register" style="border:none; background:none; color:var(--accent); font-weight:600; font-size:0.8rem; cursor:pointer; font-family:inherit;">Crear una gratis</button>
+        </p>
+      </div>
+
+      <!-- Panel: Registro -->
+      <div class="tab-panel" id="panel-register" role="tabpanel">
+        <form id="register-form" autocomplete="off">
+          <div class="login-field">
+            <label for="reg-username">Nombre de usuario</label>
+            <input
+              type="text"
+              id="reg-username"
+              name="reg-username"
+              placeholder="Elige un nombre único"
+              autocomplete="off"
+              maxlength="30"
+              required
+            >
+          </div>
+
+          <div class="login-field">
+            <label for="reg-password">Contraseña</label>
+            <input
+              type="password"
+              id="reg-password"
+              name="reg-password"
+              placeholder="Mínimo 4 caracteres"
+              autocomplete="new-password"
+              minlength="4"
+              required
+            >
+            <div class="password-strength">
+              <div class="password-strength-bar" id="strength-bar"></div>
+            </div>
+          </div>
+
+          <div class="login-field">
+            <label for="reg-password2">Confirmar contraseña</label>
+            <input
+              type="password"
+              id="reg-password2"
+              name="reg-password2"
+              placeholder="Repite la contraseña"
+              autocomplete="new-password"
+              required
+            >
+          </div>
+
+          <div id="register-error"></div>
+          <div id="register-success"></div>
+
+          <button type="submit" id="register-submit">Crear cuenta</button>
+        </form>
+
+        <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--text-muted)">
+          ¿Ya tienes cuenta?
+          <button id="goto-login" style="border:none; background:none; color:var(--accent); font-weight:600; font-size:0.8rem; cursor:pointer; font-family:inherit;">Iniciar sesión</button>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       BANNER DE MODO EDICIÓN (solo Emmanuel)
+  ═══════════════════════════════════════ -->
+  <div id="edit-banner">
+    <span class="edit-banner-text">
+      ✏️&nbsp; <strong>Modo edición</strong> —
+      <span id="pending-count">0</span> campos por completar.
+      Pasa el cursor sobre cualquier área resaltada para ver qué agregar.
+    </span>
+    <button id="edit-close" title="Cerrar banner">✕</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       BARRA DE NAVEGACIÓN
+  ═══════════════════════════════════════ -->
+  <nav>
+    <div class="wrapper">
+      <a class="nav-logo" href="#" data-field="Tu nombre">Emmanuel</a>
+
+      <div class="nav-right">
+        <ul class="nav-links">
+          <li><a href="#sobre-mi">Sobre mí</a></li>
+          <li><a href="#proyectos">Proyectos</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+
+        <!-- Botón de tema -->
+        <button id="theme-toggle" aria-label="Cambiar tema"></button>
+
+        <!-- Enlace al panel de admin (solo visible para Emmanuel) -->
+        <a href="admin.html" id="admin-link" aria-label="Panel de administración" style="display:none; text-decoration:none;">
+          <span style="
+            display:inline-flex;
+            align-items:center;
+            gap:0.3rem;
+            padding:0.38rem 0.75rem;
+            border-radius:100px;
+            border:1.5px solid rgba(79,131,245,0.35);
+            background:rgba(79,131,245,0.08);
+            color:var(--accent);
+            font-size:0.78rem;
+            font-weight:600;
+            transition:all 0.2s;
+            white-space:nowrap;
+          ">🗄️ Admin</span>
+        </a>
+
+        <!-- Botón login / sesión activa -->
+        <button id="login-btn" aria-label="Iniciar sesión">
+          🔑 Iniciar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════ -->
+  <div class="wrapper">
+    <section class="hero">
+
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Disponible para proyectos
+      </div>
+
+      <h1>Hola, soy <span class="gradient-text" data-field="Tu nombre">Emmanuel</span></h1>
+
+      <p data-field="Tu descripción breve">Desarrollador apasionado por crear experiencias digitales modernas, limpias y bien construidas.</p>
+
+      <div class="hero-cta">
+        <a href="#proyectos" class="btn btn-primary" id="cta-proyectos">Ver proyectos</a>
+        <a href="#contacto" class="btn btn-outline" id="cta-contacto">Contáctame</a>
+      </div>
+
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       SOBRE MÍ
+  ═══════════════════════════════════════ -->
+  <div class="wrapper">
+    <section class="section" id="sobre-mi">
+
+      <p class="section-label">Introducción</p>
+      <h2 class="section-title">Sobre mí</h2>
+
+      <div class="card">
+        <p data-field="Tu presentación personal">Aquí irá una breve presentación: quién eres, qué haces y qué te interesa.
+           Cuéntale a los visitantes tu historia, tu enfoque y lo que te hace único como desarrollador.</p>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <p class="section-label" style="margin-bottom: 0.75rem;">Tecnologías</p>
+
+        <div class="skills-grid" data-field="Tus tecnologías">
+          <span class="skill-tag">HTML</span>
+          <span class="skill-tag">CSS</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Node.js</span>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       PROYECTOS
+  ═══════════════════════════════════════ -->
+  <div class="wrapper">
+    <section class="section" id="proyectos">
+
+      <p class="section-label">Trabajo</p>
+      <h2 class="section-title">Proyectos</h2>
+
+      <div id="projects-container">
+        <!-- Proyecto 1 -->
+        <div class="card">
+          <button class="delete-proj-btn" onclick="deleteProject(this)" aria-label="Eliminar proyecto">🗑 Eliminar</button>
+          <h3 data-field="Nombre del proyecto">Proyecto 1</h3>
+          <p data-field="Descripción del proyecto">Descripción breve: qué problema resuelve, tecnologías usadas y tu aporte al proyecto.</p>
+          <a href="#" class="card-link">
+            Ver proyecto
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 8h10M9 4l4 4-4 4"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+      <button id="add-project-btn" onclick="addProject()">➕ Añadir Proyecto</button>
+
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════════════════════
+       CONTACTO
+  ═══════════════════════════════════════ -->
+  <div class="wrapper">
+    <section class="section" id="contacto">
+
+      <p class="section-label">Hablemos</p>
+      <h2 class="section-title">Contacto</h2>
+
+      <div class="card">
+        <ul class="contact-list">
+
+          <li>
+            <a href="mailto:tucorreo@email.com" id="contact-email" data-field="Tu correo electrónico">
+              <span class="contact-icon">✉️</span>
+              emanuelvalderrama234@gmail.com
+            </a>
+          </li>
+
+          <li>
+            <a href="https://github.com/tuusuario" id="contact-github" target="_blank" rel="noopener" data-field="Tu perfil de GitHub">
+              <span class="contact-icon">🐙</span>
+              Emmanuel123456789101112
+            </a>
+          </li>
+
+        </ul>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════ -->
+  <footer>
+    <p>© 2026 <span data-field="Tu nombre">Emmanuel</span> · Hecho con dedicación</p>
+  </footer>
+
+  <!-- Toast de notificación -->
+  <div id="toast"></div>
+
+  <!-- ═══════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════ -->
+  <script>
+    /* ────────────────────────────────────────
+       BASE DE DATOS DE USUARIOS (localStorage)
+       Credenciales del propietario (Emmanuel)
+       y estructura para otros usuarios.
+
+       NOTA: Para un portfolio estático sin servidor
+       usamos localStorage como almacén ligero. Las
+       credenciales del admin están hardcodeadas;
+       las de otros usuarios se guardan en localStorage.
+
+       ⚠️ Las credenciales de Emmanuel están aquí para
+       facilidad de uso. No expongas contraseñas
+       sensibles en proyectos de producción con backend.
+    ──────────────────────────────────────── */
+
+    const ADMIN_USER = 'Emmanuel';
+    const ADMIN_PASS = '1234';
+
+    /* Inicializar base de usuarios en localStorage si no existe */
+    function getUsers() {
+      const stored = localStorage.getItem('portfolio_users');
+      return stored ? JSON.parse(stored) : {};
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('portfolio_users', JSON.stringify(users));
+    }
+
+    /* Verificar credenciales:
+       - Si es Emmanuel → admin
+       - Si coincide con otro usuario guardado → viewer
+       - Si no existe → false (no registrado, solo puede registrarse o fallar)
+    */
+    function checkCredentials(username, password) {
+      // Admin hardcodeado
+      if (username === ADMIN_USER && password === ADMIN_PASS) {
+        return { role: 'admin', username: ADMIN_USER };
+      }
+
+      // Otros usuarios guardados
+      const users = getUsers();
+      const key = username.toLowerCase();
+      if (users[key] && users[key].password === password) {
+        if (users[key].banned) return { error: '🚫 Esta cuenta ha sido suspendida.' };
+        return { role: users[key].role || 'viewer', username: users[key].displayName };
+      }
+
+      return { error: 'Contraseña incorrecta o usuario no encontrado.' };
+    }
+
+    /* ────────────────────────────────────────
+       SESIÓN ACTIVA (también en localStorage)
+    ──────────────────────────────────────── */
+    function getSession() {
+      const s = localStorage.getItem('portfolio_session');
+      return s ? JSON.parse(s) : null;
+    }
+
+    function saveSession(session) {
+      localStorage.setItem('portfolio_session', JSON.stringify(session));
+    }
+
+    function clearSession() {
+      localStorage.removeItem('portfolio_session');
+    }
+
+    /* ────────────────────────────────────────
+       TEMA
+    ──────────────────────────────────────── */
+    const ICON_MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+    </svg>`;
+
+    const ICON_SUN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>`;
+
+    const htmlEl = document.documentElement;
+    const toggleBtn = document.getElementById('theme-toggle');
+
+    function applyTheme(theme) {
+      htmlEl.setAttribute('data-theme', theme);
+      toggleBtn.innerHTML = theme === 'dark' ? ICON_MOON : ICON_SUN;
+      toggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const systemDark  = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(savedTheme || (systemDark ? 'dark' : 'light'));
+
+    toggleBtn.addEventListener('click', () => {
+      const current = htmlEl.getAttribute('data-theme');
+      const next    = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('theme', next);
+    });
+
+    /* ────────────────────────────────────────
+       UI DE SESIÓN
+    ──────────────────────────────────────── */
+    const loginBtn     = document.getElementById('login-btn');
+    const loginOverlay = document.getElementById('login-overlay');
+    const loginClose   = document.getElementById('login-close');
+    const loginForm    = document.getElementById('login-form');
+    const loginError   = document.getElementById('login-error');
+    const editBanner   = document.getElementById('edit-banner');
+    const editClose    = document.getElementById('edit-close');
+    const pendingCount = document.getElementById('pending-count');
+    const toast        = document.getElementById('toast');
+
+    /* Mostrar toast temporal */
+    function showToast(msg, duration = 2800) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), duration);
+    }
+
+    /* Aplicar estado visual según la sesión */
+    function applySession(session) {
+      if (!session) {
+        /* Sin sesión: ocultar modo edición, botón "Iniciar sesión" */
+        document.body.classList.remove('edit-mode');
+        loginBtn.className = 'login-btn';
+        loginBtn.innerHTML = '🔑 Iniciar sesión';
+        loginBtn.setAttribute('aria-label', 'Iniciar sesión');
+        /* Ocultar enlace admin */
+        const adminLinkOff = document.getElementById('admin-link');
+        if (adminLinkOff) adminLinkOff.style.display = 'none';
+        return;
+      }
+
+      const isAdmin = session.role === 'admin';
+
+      /* Actualizar botón */
+      loginBtn.classList.add('logged-in');
+      loginBtn.innerHTML = `<span class="user-dot"></span>${session.username} ${isAdmin ? '👑' : ''} · Salir`;
+      loginBtn.setAttribute('aria-label', `Cerrar sesión de ${session.username}`);
+
+      if (isAdmin) {
+        /* Activar modo edición solo para Emmanuel */
+        document.body.classList.add('edit-mode');
+
+        /* Mostrar enlace al panel admin */
+        const adminLink = document.getElementById('admin-link');
+        if (adminLink) adminLink.style.display = 'inline-flex';
+
+        /* Contar campos pendientes */
+        const fields = document.querySelectorAll('[data-field]');
+        if (pendingCount) pendingCount.textContent = fields.length;
+
+        /* Activar edición inline (puede llamarse varias veces sin problema) */
+        enableInlineEditing();
+      } else {
+        /* Otros usuarios: solo vista */
+        document.body.classList.remove('edit-mode');
+        const adminLink = document.getElementById('admin-link');
+        if (adminLink) adminLink.style.display = 'none';
+      }
+    }
+
+    /* Abrir modal */
+    function openLogin(tabToOpen = 'login') {
+      loginOverlay.classList.add('open');
+      /* Siempre volver al tab correcto y limpiar errores */
+      switchTab(tabToOpen);
+      loginError.style.display = 'none';
+      loginForm.reset();
+      /* también limpiar el panel de registro */
+      if (registerError)   registerError.style.display   = 'none';
+      if (registerSuccess) registerSuccess.style.display = 'none';
+      /* Focus al campo correcto */
+      setTimeout(() => {
+        const el = tabToOpen === 'register'
+          ? document.getElementById('reg-username')
+          : document.getElementById('login-username');
+        if (el) el.focus();
+      }, 50);
+    }
+
+    /* Cerrar modal */
+    function closeLogin() {
+      loginOverlay.classList.remove('open');
+    }
+
+    /* Click en el botón nav */
+    loginBtn.addEventListener('click', () => {
+      const session = getSession();
+
+      if (session) {
+        /* Ya está logueado → cerrar sesión */
+        clearSession();
+        applySession(null);
+        showToast(`👋 Hasta luego, ${session.username}`);
+      } else {
+        /* Abrir modal de login */
+        openLogin();
+      }
+    });
+
+    /* Cerrar modal con botón X */
+    loginClose.addEventListener('click', closeLogin);
+
+    /* Cerrar modal al hacer clic fuera */
+    loginOverlay.addEventListener('click', (e) => {
+      if (e.target === loginOverlay) closeLogin();
+    });
+
+    /* Cerrar modal con Escape */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && loginOverlay.classList.contains('open')) {
+        closeLogin();
+      }
+    });
+
+    /* ────────────────────────────────────────
+       TABS DEL MODAL
+    ──────────────────────────────────────── */
+    const tabLogin    = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const panelLogin  = document.getElementById('panel-login');
+    const panelReg    = document.getElementById('panel-register');
+
+    function switchTab(active) {
+      const isLogin = active === 'login';
+      tabLogin.classList.toggle('active', isLogin);
+      tabRegister.classList.toggle('active', !isLogin);
+      tabLogin.setAttribute('aria-selected', isLogin);
+      tabRegister.setAttribute('aria-selected', !isLogin);
+      panelLogin.classList.toggle('active', isLogin);
+      panelReg.classList.toggle('active', !isLogin);
+    }
+
+    tabLogin.addEventListener('click', () => switchTab('login'));
+    tabRegister.addEventListener('click', () => switchTab('register'));
+
+    document.getElementById('goto-register').addEventListener('click', () => switchTab('register'));
+    document.getElementById('goto-login').addEventListener('click', () => switchTab('login'));
+
+    /* ────────────────────────────────────────
+       INDICADOR DE FORTALEZA DE CONTRASEÑA
+    ──────────────────────────────────────── */
+    const regPassInput = document.getElementById('reg-password');
+    const strengthBar  = document.getElementById('strength-bar');
+
+    regPassInput.addEventListener('input', () => {
+      const val = regPassInput.value;
+      let score = 0;
+      if (val.length >= 4)  score++;
+      if (val.length >= 8)  score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const pct   = (score / 5) * 100;
+      const color = score <= 1 ? '#f87171' : score <= 3 ? '#facc15' : '#4ade80';
+      strengthBar.style.width     = pct + '%';
+      strengthBar.style.background = color;
+    });
+
+    /* ────────────────────────────────────────
+       FORMULARIO DE REGISTRO
+    ──────────────────────────────────────── */
+    const registerForm    = document.getElementById('register-form');
+    const registerError   = document.getElementById('register-error');
+    const registerSuccess = document.getElementById('register-success');
+
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const username  = document.getElementById('reg-username').value.trim();
+      const password  = document.getElementById('reg-password').value;
+      const password2 = document.getElementById('reg-password2').value;
+
+      registerError.style.display   = 'none';
+      registerSuccess.style.display = 'none';
+
+      function regErr(msg) {
+        registerError.textContent    = '❌ ' + msg;
+        registerError.style.display  = 'block';
+      }
+
+      /* Validaciones */
+      if (!username) return regErr('El nombre de usuario no puede estar vacío.');
+      if (username.toLowerCase() === 'emmanuel')
+        return regErr('Ese nombre de usuario está reservado.');
+      if (password.length < 4)
+        return regErr('La contraseña debe tener al menos 4 caracteres.');
+      if (password !== password2)
+        return regErr('Las contraseñas no coinciden.');
+
+      /* Verificar que no exista ya */
+      const users = getUsers();
+      const key   = username.toLowerCase();
+      if (users[key]) return regErr('Ese nombre de usuario ya está en uso.');
+
+      /* Guardar nuevo usuario */
+      users[key] = { displayName: username, password: password };
+      saveUsers(users);
+
+      /* Feedback y auto-login */
+      registerSuccess.textContent    = '✅ Cuenta creada. Iniciando sesión...';
+      registerSuccess.style.display  = 'block';
+      registerForm.reset();
+      strengthBar.style.width = '0%';
+
+      setTimeout(() => {
+        const session = { role: 'viewer', username: username };
+        saveSession(session);
+        closeLogin();
+        applySession(session);
+        showToast('✅ Bienvenido, ' + username + '! Cuenta creada.');
+      }, 1200);
+    });
+
+    /* Enviar formulario de login */
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      const result = checkCredentials(username, password);
+
+      if (result && !result.error) {
+        saveSession(result);
+        closeLogin();
+        applySession(result);
+
+        const msg = result.role === 'admin'
+          ? `✅ Bienvenido, ${result.username}! Modo edición activado.`
+          : `✅ Bienvenido, ${result.username}! Acceso de solo lectura.`;
+
+        showToast(msg);
+      } else {
+        loginError.textContent = result && result.error ? result.error : 'Contraseña incorrecta o usuario no encontrado.';
+        loginError.style.display = 'block';
+        /* Animación de sacudida */
+        const modal = document.querySelector('.login-modal');
+        modal.style.animation = 'none';
+        void modal.offsetWidth; /* reflow */
+        modal.style.animation = '';
+      }
+    });
+
+    /* Banner de edición — botón X */
+    if (editClose) {
+      editClose.addEventListener('click', () => {
+        editBanner.style.display = 'none';
+      });
+    }
+
+    /* ────────────────────────────────────────
+       EDICIÓN INLINE DE CAMPOS (solo admin)
+       Al activar edit-mode, cada [data-field] se
+       convierte en contenteditable. Los cambios se
+       persisten en localStorage bajo la clave
+       'portfolio_content' como un objeto { fieldKey: texto }.
+    ──────────────────────────────────────── */
+
+    /* Clave base para el almacenamiento de contenidos */
+    const CONTENT_KEY = 'portfolio_content';
+
+    function getContent() {
+      const raw = localStorage.getItem(CONTENT_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }
+
+    function saveContent(key, value) {
+      const content = getContent();
+      content[key] = value;
+      localStorage.setItem(CONTENT_KEY, JSON.stringify(content));
+    }
+
+    /* Genera una clave única por campo usando su data-field + posición */
+    function fieldKey(el) {
+      const name  = el.getAttribute('data-field') || 'field';
+      const index = [...document.querySelectorAll(`[data-field="${name}"]`)].indexOf(el);
+      return `${name}__${index}`;
+    }
+
+    /* Restaura el contenido guardado en todos los campos */
+    function restoreSavedContent() {
+      const content = getContent();
+      document.querySelectorAll('[data-field]').forEach(el => {
+        const k = fieldKey(el);
+        if (content[k] !== undefined) {
+          el.textContent = content[k];
+        }
+      });
+    }
+
+    /* Activa la edición inline en todos los [data-field] */
+    function enableInlineEditing() {
+      document.querySelectorAll('[data-field]').forEach(el => {
+        /* Evitar doble registro */
+        if (el.dataset.editingReady) return;
+        el.dataset.editingReady = 'true';
+
+        /* Hacer editable al hacer clic */
+        el.addEventListener('click', function(e) {
+          if (!document.body.classList.contains('edit-mode')) return;
+          e.preventDefault();
+          e.stopPropagation();
+
+          this.setAttribute('contenteditable', 'true');
+          this.focus();
+
+          /* Colocar cursor al final del texto */
+          const range = document.createRange();
+          const sel   = window.getSelection();
+          range.selectNodeContents(this);
+          range.collapse(false);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        });
+
+        /* Guardar al salir del campo */
+        el.addEventListener('blur', function() {
+          this.removeAttribute('contenteditable');
+          const k   = fieldKey(this);
+          const val = this.textContent.trim();
+          saveContent(k, val);
+          showToast('💾 Guardado');
+        });
+
+        /* Confirmar con Enter (sin nueva línea), cancelar con Escape */
+        el.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            this.blur();
+          }
+          if (e.key === 'Escape') {
+            /* Restaurar valor guardado y salir */
+            const k = fieldKey(this);
+            const content = getContent();
+            if (content[k] !== undefined) this.textContent = content[k];
+            this.removeAttribute('contenteditable');
+            this.blur();
+          }
+        });
+      });
+    }
+
+    /* ────────────────────────────────────────
+       GESTIÓN DE PROYECTOS DINÁMICOS
+    ──────────────────────────────────────── */
+    
+    function loadProjects() {
+      const savedHtml = localStorage.getItem('portfolio_projects_html');
+      if (savedHtml) {
+        document.getElementById('projects-container').innerHTML = savedHtml;
+      }
+    }
+    
+    function saveProjects() {
+      const container = document.getElementById('projects-container');
+      localStorage.setItem('portfolio_projects_html', container.innerHTML);
+    }
+    
+    function addProject() {
+      const num = document.querySelectorAll('#projects-container .card').length + 1;
+      const html = `
+        <div class="card">
+          <button class="delete-proj-btn" onclick="deleteProject(this)" aria-label="Eliminar proyecto">🗑 Eliminar</button>
+          <h3 data-field="Nombre del proyecto">Nuevo Proyecto ${num}</h3>
+          <p data-field="Descripción del proyecto">Describe las tecnologías y el problema que resuelve este proyecto.</p>
+          <a href="#" class="card-link">
+            Ver proyecto
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 8h10M9 4l4 4-4 4"/>
+            </svg>
+          </a>
+        </div>
+      `;
+      document.getElementById('projects-container').insertAdjacentHTML('beforeend', html);
+      saveProjects();
+      enableInlineEditing();
+      showToast('➕ Proyecto añadido');
+    }
+    
+    function deleteProject(btn) {
+      btn.closest('.card').remove();
+      saveProjects();
+      showToast('🗑 Proyecto eliminado');
+    }
+
+    /* ────────────────────────────────────────
+       RESTAURAR SESIÓN AL CARGAR LA PÁGINA
+    ──────────────────────────────────────── */
+    
+    // Cargar estructura de proyectos primero
+    loadProjects();
+
+    /* Restaurar contenido guardado (visible para todos) */
+    restoreSavedContent();
+
+    function syncSessionState() {
+      let session = getSession();
+      if (!session || session.username === ADMIN_USER) return session;
+
+      const users = getUsers();
+      const userKey = Object.keys(users).find(k => users[k].displayName === session.username);
+
+      if (!userKey) {
+        clearSession();
+        return null;
+      }
+      if (users[userKey].banned) {
+        clearSession();
+        return { banned: true };
+      }
+      if (users[userKey].role !== session.role) {
+        session.role = users[userKey].role;
+        saveSession(session);
+      }
+      return session;
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'portfolio_users' || !e.key) {
+        const session = getSession();
+        if (session && session.username !== ADMIN_USER) {
+          const state = syncSessionState();
+          if (!state) {
+            applySession(null);
+            showToast('🗑 Tu cuenta ha sido eliminada.', 4000);
+          } else if (state.banned) {
+            applySession(null);
+            showToast('🚫 Tu sesión fue cerrada porque la cuenta fue suspendida.', 5000);
+          } else if (state.role !== session.role) {
+            applySession(state);
+            showToast('🔄 Tus permisos fueron actualizados.', 3000);
+          }
+        }
+      }
+    });
+
+    let currentSession = syncSessionState();
+    if (currentSession && currentSession.banned) currentSession = null;
+    applySession(currentSession);
+
+    /* Si ya era admin, activar edición inline */
+    if (currentSession && currentSession.role === 'admin') {
+      enableInlineEditing();
+    }
+
+  </script>
+
+</body>
+</html>
